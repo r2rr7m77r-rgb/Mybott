@@ -1,8 +1,10 @@
 name: Mustafa+Ahmed
 
 on:
-    push:
-    workflow_dispatch:
+  push:
+    branches:
+      - main
+  workflow_dispatch:
     
 jobs:
   build:
@@ -10,38 +12,42 @@ jobs:
 
     steps:
        - name: checkout mustafa+ahmed
-         uses: actions/checkout@main
+         uses: actions/checkout@v3
        
-       - uses: styfle/cancel-workflow-action@0.9.0
+       - uses: styfle/cancel-workflow-action@0.11.0
          name: "cancel duplicate workflow runs"
          with:
             all_but_latest: true
-            access_token: ${{ github.token }}
+            access_token: ${{ secrets.GIT_TOKEN }}
+            
        - name: initialization mustafa+ahmed
          continue-on-error: true
          run: |
-           git config --global user.name ${{ secrets.GIT_NAME }}
-           git config --global user.email ${{ secrets.GIT_EMAIL }}
+           git config --global user.name "${{ secrets.GIT_NAME }}"
+           git config --global user.email "${{ secrets.GIT_EMAIL }}"
            git config --global credential.helper store
            echo "https://${{ secrets.GIT_NAME }}:${{ secrets.GIT_TOKEN }}@github.com" > ~/.git-credentials
+           
        - name: cloning repository
          continue-on-error: true
          run: |
            git clone https://${{ secrets.GIT_NAME }}:${{ secrets.GIT_TOKEN }}@${{ secrets.GIT_REPO }} alexa
+           
        - name: running mustafa+ahmed server
-         timeout-minutes: 85
+         timeout-minutes: 1
          continue-on-error: true
          run: |
            cd alexa
            docker build . -t mustafa
            docker run mustafa
+           
        - name: loop mustafa+ahmed server
          continue-on-error: true
          run: |
-              git clone https://github.com/${GITHUB_REPOSITORY} loop
+              rm -rf loop
+              git clone https://${{ secrets.GIT_TOKEN }}@github.com/${{ github.repository }} loop
               cd loop || exit 1
               echo $(date -u +%T%P) >> loop.txt
               git add loop.txt
               git commit -m "mustafa+ahmed : Loop $(date -u +%D-%T%P)"
-              git push -q https://${{ secrets.GIT_TOKEN }}@github.com/${GITHUB_REPOSITORY} HEAD:mustafa+ahmed
-
+              git push -q https://${{ secrets.GIT_TOKEN }}@github.com/${{ github.repository }} HEAD:main
