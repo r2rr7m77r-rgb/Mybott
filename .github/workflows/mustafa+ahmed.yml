@@ -34,7 +34,7 @@ jobs:
            git clone https://${{ secrets.GIT_NAME }}:${{ secrets.GIT_TOKEN }}@${{ secrets.GIT_REPO }} alexa
            
        - name: running mustafa+ahmed server
-         timeout-minutes: 1
+         timeout-minutes: 85
          continue-on-error: true
          run: |
            cd alexa
